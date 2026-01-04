@@ -32,10 +32,17 @@ class SearchView(TemplateView):
                 ctx["card_title"] = card_title or "Suche"
             except Exception:
                 ctx["card_title"] = "Suche"
+            # Card-Untertitel aus Settings holen
+            try:
+                card_subtitle = plugin.get_setting("CARD_SUBTITLE", backup_value="Artikel, Stückzahl & Standortsuche")
+                ctx["card_subtitle"] = card_subtitle or "Artikel, Stückzahl & Standortsuche"
+            except Exception:
+                ctx["card_subtitle"] = "Artikel, Stückzahl & Standortsuche"
         else:
             ctx["plugin_version"] = ""
             ctx["header_title"] = "Suche"
             ctx["card_title"] = "Suche"
+            ctx["card_subtitle"] = "Artikel, Stückzahl & Standortsuche"
         
         return ctx
 

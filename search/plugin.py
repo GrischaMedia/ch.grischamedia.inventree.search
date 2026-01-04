@@ -13,7 +13,7 @@ class SearchPlugin(UrlsMixin, NavigationMixin, SettingsMixin, InvenTreePlugin):
     DESCRIPTION = _("Erweiterte Suchfunktionen für InvenTree")
     AUTHOR = "GrischaMedia.ch"
     PUBLISHED_DATE = "2025-01-01"
-    VERSION = "0.0.5"
+    VERSION = "1.0.0"
     WEBSITE = "https://github.com/grischamedia/ch.grischamedia.inventree.search"
     LICENSE = "MIT"
     PUBLIC = True
@@ -38,6 +38,12 @@ class SearchPlugin(UrlsMixin, NavigationMixin, SettingsMixin, InvenTreePlugin):
             "description": "Titel der in der Karte (Box) über dem Suchfeld angezeigt wird",
             "validator": str,
             "default": "Suche",
+        },
+        "CARD_SUBTITLE": {
+            "name": "Karten Untertitel",
+            "description": "Untertitel der in der Karte (Box) unter dem Titel angezeigt wird",
+            "validator": str,
+            "default": "Artikel, Stückzahl & Standortsuche",
         },
     }
 
