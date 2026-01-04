@@ -13,7 +13,7 @@ class SearchPlugin(UrlsMixin, NavigationMixin, SettingsMixin, InvenTreePlugin):
     DESCRIPTION = _("Erweiterte Suchfunktionen für InvenTree")
     AUTHOR = "GrischaMedia.ch"
     PUBLISHED_DATE = "2025-01-01"
-    VERSION = "0.0.1"
+    VERSION = "0.0.2"
     WEBSITE = "https://github.com/grischamedia/ch.grischamedia.inventree.search"
     LICENSE = "MIT"
     PUBLIC = True
