@@ -1,40 +1,44 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=75", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ch.grischamedia.inventree.search"
-version = "0.0.2"
-description = "Erweiterte Suchfunktionen für InvenTree"
+name = "ch-grischamedia-inventree-search"
+version = "0.0.3"
+description = "InvenTree plugin: erweiterte Suchfunktionen"
 readme = "README.md"
-requires-python = ">=3.8"
-license = {text = "MIT"}
+requires-python = ">=3.10"
+license = "MIT"
 authors = [
-    {name = "GrischaMedia.ch"}
+    {name = "Grischa Media"}
 ]
-keywords = ["inventree", "plugin", "search"]
+keywords = ["inventree", "inventreeplugins", "plugin"]
 classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
+    "Development Status :: 3 - Alpha",
+    "Framework :: Django",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3 :: Only",
 ]
+dependencies = []
 
 [project.urls]
 Homepage = "https://github.com/grischamedia/ch.grischamedia.inventree.search"
-Repository = "https://github.com/grischamedia/ch.grischamedia.inventree.search"
-Issues = "https://github.com/grischamedia/ch.grischamedia.inventree.search/issues"
+Upstream = "https://github.com/inventree/InvenTree"
+Documentation = "https://docs.inventree.org/en/stable/plugins/"
+
+[project.entry-points."inventree.plugins"]
+search = "search.plugin:SearchPlugin"
+
+[project.entry-points."inventree_plugins"]
+search = "search.plugin:SearchPlugin"
 
 [tool.setuptools]
-packages = ["search"]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["search*"]
 
 [tool.setuptools.package-data]
-search = [
-    "templates/**/*",
-    "static/**/*",
-]
+search = ["templates/**/*", "static/**/*"]
 
