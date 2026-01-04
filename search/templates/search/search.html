@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ plugin_title }} - InvenTree</title>
+  <title>{{ header_title }}</title>
   <style>
 body {
   margin: 0;
@@ -81,18 +81,19 @@ body {
 }
 
 .search-input {
-  width: 100%;
+  width: calc(100% - 2rem);
   padding: 0.75rem 1rem;
   font-size: 1rem;
   border: 2px solid #ced4da;
   border-radius: 0.5rem;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  box-sizing: border-box;
 }
 
 .search-input:focus {
   outline: 0;
-  border-color: #0d6efd;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  border-color: #212529;
+  box-shadow: 0 0 0 0.25rem rgba(33, 37, 41, 0.25);
 }
 
 .search-icon {
@@ -114,6 +115,21 @@ body {
   margin-bottom: 0.75rem;
   background-color: #fff;
   transition: box-shadow 0.15s ease-in-out;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.result-item-content {
+  flex: 1;
+}
+
+.result-item-sidebar {
+  text-align: right;
+  min-width: 200px;
+  color: #6c757d;
+  font-size: 0.875rem;
 }
 
 .result-item:hover {
@@ -127,12 +143,13 @@ body {
 }
 
 .result-item h4 a {
-  color: #0d6efd;
+  color: #212529;
   text-decoration: none;
 }
 
 .result-item h4 a:hover {
   text-decoration: underline;
+  color: #000000;
 }
 
 .result-meta {
@@ -190,14 +207,20 @@ body {
 }
 
 .badge-primary {
-  background-color: #0d6efd;
+  background-color: #212529;
+}
+
+.alert-danger {
+  color: #842029;
+  background-color: #f8d7da;
+  border-color: #f5c2c7;
 }
   </style>
 </head>
 <body>
   <div class="page">
     <div class="topbar">
-      <span>InvenTree - {{ plugin_title }}</span>
+      <span>{{ header_title }}</span>
       {% if plugin_version %}
       <span class="version-badge">v{{ plugin_version }}</span>
       {% endif %}
@@ -206,7 +229,7 @@ body {
     <div class="container">
       <div class="card">
         <div class="card-header">
-          <h1 class="card-title">{{ plugin_title }}</h1>
+          <h1 class="card-title">{{ card_title }}</h1>
         </div>
 
         <div class="card-body">
@@ -294,13 +317,16 @@ body {
           const item = document.createElement('div');
           item.className = 'result-item';
 
+          const content = document.createElement('div');
+          content.className = 'result-item-content';
+
           const title = document.createElement('h4');
           const link = document.createElement('a');
           link.href = result.url || '#';
           if (result.url) link.target = '_blank';
           link.textContent = result.name;
           title.appendChild(link);
-          item.appendChild(title);
+          content.appendChild(title);
 
           const meta = document.createElement('div');
           meta.className = 'result-meta';
@@ -312,13 +338,30 @@ body {
             metaText += ` | Kategorie: ${result.category}`;
           }
           meta.innerHTML = metaText;
-          item.appendChild(meta);
+          content.appendChild(meta);
 
           if (result.description) {
             const desc = document.createElement('div');
             desc.className = 'result-description';
             desc.textContent = result.description;
-            item.appendChild(desc);
+            content.appendChild(desc);
+          }
+
+          item.appendChild(content);
+
+          // Sidebar mit Lagerort und Stückanzahl
+          const sidebar = document.createElement('div');
+          sidebar.className = 'result-item-sidebar';
+          let sidebarText = '';
+          if (result.location) {
+            sidebarText += `<div><strong>Lagerort:</strong><br>${result.location}</div>`;
+          }
+          if (result.quantity !== undefined && result.quantity !== null) {
+            sidebarText += `<div style="margin-top: 0.5rem;"><strong>Stück:</strong> ${result.quantity}</div>`;
+          }
+          if (sidebarText) {
+            sidebar.innerHTML = sidebarText;
+            item.appendChild(sidebar);
           }
 
           list.appendChild(item);
@@ -335,10 +378,30 @@ body {
 
         try {
           const res = await fetch(`${SEARCH.apiUrl}?q=${encodeURIComponent(query)}`);
-          const data = await res.json();
+          
+          let data;
+          try {
+            data = await res.json();
+          } catch (jsonError) {
+            // Wenn JSON-Parsing fehlschlägt, versuche Text zu lesen
+            const text = await res.text();
+            setAlert('danger', 'Fehler bei der Suche: Ungültige Antwort vom Server');
+            return;
+          }
 
           if (!res.ok) {
-            setAlert('danger', data.error || `Fehler (${res.status})`);
+            let errorMsg = data.error || data.detail || `Fehler (${res.status})`;
+            // Fehlermeldungen auf Deutsch übersetzen
+            if (errorMsg.includes('string did not match the expected pattern')) {
+              errorMsg = 'Ungültiges Suchformat';
+            } else if (errorMsg.includes('method_not_allowed')) {
+              errorMsg = 'Methode nicht erlaubt';
+            } else if (errorMsg.includes('plugin_not_loaded')) {
+              errorMsg = 'Plugin nicht geladen';
+            } else if (errorMsg.includes('search_disabled')) {
+              errorMsg = 'Suche ist deaktiviert';
+            }
+            setAlert('danger', errorMsg);
             return;
           }
 
@@ -347,9 +410,24 @@ body {
 
           if (results.length === 0) {
             clearAlert();
+          } else {
+            clearAlert();
           }
         } catch (e) {
-          setAlert('danger', 'Fehler bei der Suche: ' + (e.message || 'Unbekannter Fehler'));
+          let errorMsg = 'Unbekannter Fehler';
+          if (e.message) {
+            // Fehlermeldungen auf Deutsch übersetzen
+            if (e.message.includes('string did not match the expected pattern')) {
+              errorMsg = 'Ungültiges Suchformat';
+            } else if (e.message.includes('Failed to fetch')) {
+              errorMsg = 'Verbindungsfehler';
+            } else if (e.message.includes('NetworkError')) {
+              errorMsg = 'Netzwerkfehler';
+            } else {
+              errorMsg = e.message;
+            }
+          }
+          setAlert('danger', 'Fehler bei der Suche: ' + errorMsg);
         }
       }
 
