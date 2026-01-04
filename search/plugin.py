@@ -8,12 +8,12 @@ class SearchPlugin(UrlsMixin, NavigationMixin, SettingsMixin, InvenTreePlugin):
     """Enhanced search functionality for InvenTree."""
 
     NAME = "Suche"
-    SLUG = "search"
+    SLUG = "gm-search"
     TITLE = _("Suche")
     DESCRIPTION = _("Erweiterte Suchfunktionen für InvenTree")
     AUTHOR = "GrischaMedia.ch"
     PUBLISHED_DATE = "2025-01-01"
-    VERSION = "0.0.3"
+    VERSION = "0.0.4"
     WEBSITE = "https://github.com/grischamedia/ch.grischamedia.inventree.search"
     LICENSE = "MIT"
     PUBLIC = True
@@ -27,12 +27,18 @@ class SearchPlugin(UrlsMixin, NavigationMixin, SettingsMixin, InvenTreePlugin):
             "validator": bool,
             "default": True,
         },
+        "HEADER_TITLE": {
+            "name": "Header Titel",
+            "description": "Titel der in der Kopfzeile der Suchseite angezeigt wird",
+            "validator": str,
+            "default": "Suche",
+        },
     }
 
     NAVIGATION = [
         {
             "name": _("Suche"),
-            "link": "plugin:search:index",
+            "link": "plugin:gm-search:index",
             "icon": "fa-search",
             "roles": ["topbar", "sidebar"],
         }

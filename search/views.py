@@ -15,14 +15,20 @@ class SearchView(TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['request'] = self.request
-        ctx["plugin_title"] = "Suche"
         ctx["csrf_token"] = get_token(self.request)
         
-        plugin = registry.get_plugin("search")
+        plugin = registry.get_plugin("gm-search")
         if plugin:
             ctx["plugin_version"] = plugin.VERSION
+            # Header-Titel aus Settings holen, falls vorhanden
+            try:
+                header_title = plugin.get_setting("HEADER_TITLE", backup_value="Suche")
+                ctx["plugin_title"] = header_title or "Suche"
+            except Exception:
+                ctx["plugin_title"] = "Suche"
         else:
             ctx["plugin_version"] = ""
+            ctx["plugin_title"] = "Suche"
         
         return ctx
 
@@ -32,6 +38,17 @@ class SearchView(TemplateView):
 def search(request: HttpRequest):
     if request.method != "GET":
         return JsonResponse({"error": "method_not_allowed"}, status=405)
+
+    plugin = registry.get_plugin("gm-search")
+    if not plugin:
+        return JsonResponse({"error": "plugin_not_loaded"}, status=500)
+
+    enable_search = bool(plugin.get_setting("ENABLE_ADVANCED_SEARCH", backup_value=True))
+    if not enable_search:
+        return JsonResponse(
+            {"error": "search_disabled", "detail": "Plugin setting ENABLE_ADVANCED_SEARCH is disabled"},
+            status=400,
+        )
 
     query = request.GET.get("q", "").strip()
     if not query:

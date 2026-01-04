@@ -4,7 +4,7 @@ InvenTree Plugin für **erweiterte Suchfunktionen** in InvenTree.
 
 ## Funktion
 
-Das Plugin stellt eine erweiterte Suchseite bereit unter: **`/plugin/search/`** (Trailing Slash wichtig)
+Das Plugin stellt eine erweiterte Suchseite bereit unter: **`/plugin/gm-search/`** (Trailing Slash wichtig)
 
 Auf dieser Seite können Sie nach Teilen (Parts) suchen:
 
@@ -23,6 +23,7 @@ Auf dieser Seite können Sie nach Teilen (Parts) suchen:
 ## Plugin Settings
 
 * **ENABLE_ADVANCED_SEARCH**: Aktiviert erweiterte Suchfunktionen (Standard: aktiviert)
+* **HEADER_TITLE**: Titel der in der Kopfzeile der Suchseite angezeigt wird (Standard: "Suche")
 
 ## Installation (Development)
 
@@ -97,7 +98,7 @@ git+https://github.com/grischamedia/ch.grischamedia.inventree.search.git@master
 
 Öffne die Seite:
 
-* `https://<dein-host>/plugin/search/`
+* `https://<dein-host>/plugin/gm-search/`
 
 **Verwendung:**
 
@@ -110,14 +111,14 @@ git+https://github.com/grischamedia/ch.grischamedia.inventree.search.git@master
 
 Das Plugin stellt auch einen API-Endpunkt bereit:
 
-* **URL:** `/plugin/search/api/search/`
+* **URL:** `/plugin/gm-search/api/search/`
 * **Methode:** GET
 * **Parameter:** `q` (Suchbegriff)
 * **Rückgabe:** JSON mit Suchergebnissen
 
 **Beispiel:**
 ```
-GET /plugin/search/api/search/?q=Beispiel
+GET /plugin/gm-search/api/search/?q=Beispiel
 ```
 
 **Antwort:**
